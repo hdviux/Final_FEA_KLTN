@@ -5,12 +5,15 @@ import { Input, Table } from "antd";
 import "sweetalert2/src/sweetalert2.scss";
 import "../../../../Styles/Modal.scss";
 import productAPI from "../../../../api/productAPI";
-import { Empty } from "antd";
+import { Empty, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 const DetailCategory = (props) => {
   const { Search } = Input;
   const [allProduct, setAllProduct] = useState([]);
+  const [loading, setLoading] = useState(true);
   const onSearch = async (value) => {
     try {
+      setLoading(true);
       const getAllProduct = await productAPI.findproductbynameandcategoryid({
         productName: value,
         categoryID: props.data._id,
@@ -26,6 +29,7 @@ const DetailCategory = (props) => {
         });
       }
       setAllProduct(arr);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -47,6 +51,7 @@ const DetailCategory = (props) => {
           });
         }
         setAllProduct(arr);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -105,14 +110,37 @@ const DetailCategory = (props) => {
             onSearch={onSearch}
           />
         </div>
-        <Table
-          columns={columns}
-          pagination={{ pageSize: 5 }}
-          dataSource={allProduct}
-          locale={{
-            emptyText: <Empty description={false} />,
-          }}
-        />
+        {loading === true ? (
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              height: 200,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 55,
+                  }}
+                  spin
+                />
+              }
+            />
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            pagination={{ pageSize: 5 }}
+            dataSource={allProduct}
+            locale={{
+              emptyText: <Empty description={false} />,
+            }}
+          />
+        )}
       </Modal.Body>
     </Modal>
   );

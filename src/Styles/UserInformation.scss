@@ -1,0 +1,118 @@
+formuser {
+  flex: 1;
+  user {
+    display: flex;
+    width: 100%;
+    height: 850px;
+    flex-direction: row;
+    margin-top: 50px;
+
+    userleft {
+      display: flex;
+      width: 30%;
+      justify-content: center;
+
+      .listgroup {
+        display: flex;
+        width: 90%;
+        border-radius: 10px;
+      }
+
+      formitem {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        formitemleft {
+          display: flex;
+          flex-direction: column;
+          width: 70%;
+
+          p {
+            margin-top: 20px;
+            margin-left: 20px;
+          }
+        }
+
+        formitemright {
+          display: flex;
+          width: 30%;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+
+    userright {
+      display: flex;
+      width: 70%;
+      justify-content: center;
+
+      formprofile {
+        display: flex;
+        width: 90%;
+        height: 800px;
+        background: #fff;
+        border-radius: 10px;
+        flex-direction: row;
+
+        formavatar {
+          display: flex;
+          width: 30%;
+          height: 800px;
+          border-right: 2px solid rgba(165, 165, 165, 0.5);
+          padding-top: 50px;
+          flex-direction: column;
+          align-items: center;
+
+          .buttona {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+
+            button {
+              width: 50%;
+            }
+          }
+        }
+
+        forminput {
+          display: flex;
+          width: 70%;
+          height: 800px;
+          flex-direction: column;
+          margin-top: 50px;
+          align-items: center;
+
+          .ttcn {
+            font-size: 24px;
+            text-align: center;
+            font-weight: bold;
+          }
+
+          .inputf {
+            width: 550px;
+            margin-bottom: 25px;
+          }
+
+          .buttonl {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+
+            button {
+              width: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+input[type="file"] {
+  display: none;
+}

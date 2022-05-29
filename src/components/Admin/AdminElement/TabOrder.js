@@ -117,6 +117,19 @@ const TabOrder = (props) => {
               </div>
             </IconButton>
           </Dropdown>
+        ) : text === "shipping" ? (
+          <Dropdown overlay={<ItemButtonOrder data={rowKey} />}>
+            <IconButton>
+              <div
+                style={{
+                  fontSize: "15px",
+                  color: "#4169E1",
+                }}
+              >
+                <div>Đang giao</div>
+              </div>
+            </IconButton>
+          </Dropdown>
         ) : (
           <IconButton>
             <div
@@ -129,8 +142,6 @@ const TabOrder = (props) => {
                     ? "#FFD700"
                     : text === "refund"
                     ? "#FF4500"
-                    : text === "shipping"
-                    ? "#4169E1"
                     : "",
               }}
             >
@@ -140,8 +151,6 @@ const TabOrder = (props) => {
                 <div>Chờ xử lý</div>
               ) : text === "refund" ? (
                 <div>Đã hoàn trả</div>
-              ) : text === "shipping" ? (
-                <div>Đang giao</div>
               ) : null}
             </div>
           </IconButton>

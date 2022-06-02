@@ -24,7 +24,6 @@ import "sweetalert2/src/sweetalert2.scss";
 require("react-datepicker/dist/react-datepicker.css");
 
 const Account = () => {
-  const isSignIn = JSON.parse(localStorage.getItem("user"));
   const loggedInUser = useSelector((state) => state.user.current);
   const [showModalPhone, setShowModalPhone] = useState(false);
   const [showModalEmail, setShowModalEmail] = useState(false);

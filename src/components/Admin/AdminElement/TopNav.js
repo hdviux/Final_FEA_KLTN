@@ -36,6 +36,9 @@ const TopNav = (props) => {
             ),
         },
         {
+          type: "divider",
+        },
+        {
           label: (
             <div
               style={{ display: "flex", alignItems: "center" }}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { Dropdown, Input, Spin } from "antd";
+import { Dropdown, Input, Menu, Spin } from "antd";
 import { Table, Space, Button } from "antd";
 import { LoadingOutlined, SyncOutlined } from "@ant-design/icons";
 import orderAPI from "../../../api/orderAPI";
@@ -13,7 +13,13 @@ import "sweetalert2/src/sweetalert2.scss";
 import { Backdrop, IconButton } from "@mui/material";
 import ItemButtonOrder from "../Modal/Order/ItemButtonOrder";
 import { Empty } from "antd";
+import { useSelector } from "react-redux";
+import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CallReceivedIcon from "@mui/icons-material/CallReceived";
+import PendingIcon from "@mui/icons-material/Pending";
 const TabOrder = (props) => {
+  const loggedInUser = useSelector((state) => state.user.current);
   const { RangePicker } = DatePicker;
   const [allOrder, setAllOrder] = useState([]);
   const [startDate, setStartDate] = useState("");
@@ -35,25 +41,25 @@ const TabOrder = (props) => {
         timer: 1000,
       });
     }
-    const getAllOrder = await orderAPI.getallorder();
+
     if (startDate !== "" || endDate !== "") {
       const arr = [];
-      for (let index = 0; index < getAllOrder.result.length; index++) {
-        const timeSend = new Date(getAllOrder.result[index].dateCreated);
+      for (let index = 0; index < allOrder.length; index++) {
+        const timeSend = new Date(allOrder[index].dateCreated);
         if (
           timeSend.getTime() <= endDate.getTime() &&
           timeSend.getTime() >= startDate.getTime()
         ) {
           arr.push({
-            key: getAllOrder.result[index].key,
-            userName: getAllOrder.result[index].userName,
-            userPhone: getAllOrder.result[index].userPhone,
-            userAddress: getAllOrder.result[index].userAddress,
-            dateCreated: getAllOrder.result[index].dateCreated,
-            totalMoney: getAllOrder.result[index].totalMoney,
-            orderStatus: getAllOrder.result[index].orderStatus,
-            userID: getAllOrder.result[index].userID,
-            description: <OrderDetail data={getAllOrder.result[index]} />,
+            key: allOrder[index].key,
+            userName: allOrder[index].userName,
+            userPhone: allOrder[index].userPhone,
+            userAddress: allOrder[index].userAddress,
+            dateCreated: allOrder[index].dateCreated,
+            totalMoney: allOrder[index].totalMoney,
+            orderStatus: allOrder[index].orderStatus,
+            userID: allOrder[index].userID,
+            description: <OrderDetail data={allOrder[index]} />,
           });
         }
       }
@@ -64,7 +70,9 @@ const TabOrder = (props) => {
   useEffect(() => {
     const action = async () => {
       try {
-        const getAllOrder = await orderAPI.getallorder();
+        const getAllOrder = await orderAPI.getorderbystatus({
+          orderStatus: "pending",
+        });
         const arr = [];
         for (let index = 0; index < getAllOrder.result.length; index++) {
           arr.push({
@@ -87,6 +95,33 @@ const TabOrder = (props) => {
     };
     action();
   }, []);
+
+  const action = async (data) => {
+    try {
+      const getAllOrder = await orderAPI.getorderbystatus({
+        orderStatus: data,
+      });
+      const arr = [];
+      for (let index = 0; index < getAllOrder.result.length; index++) {
+        arr.push({
+          key: getAllOrder.result[index]._id,
+          userName: getAllOrder.result[index].userName,
+          userPhone: getAllOrder.result[index].userPhone,
+          userAddress: getAllOrder.result[index].userAddress,
+          dateCreated: getAllOrder.result[index].dateCreated,
+          totalMoney: getAllOrder.result[index].totalMoney,
+          orderStatus: getAllOrder.result[index].orderStatus,
+          userID: getAllOrder.result[index].userID,
+          description: <OrderDetail data={getAllOrder.result[index]} />,
+        });
+      }
+      setAllOrder(arr);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const columns = [
     Table.EXPAND_COLUMN,
     {
@@ -173,28 +208,78 @@ const TabOrder = (props) => {
       setLoading(true);
       setStartDate("");
       setEndDate("");
-      const getAllOrder = await orderAPI.getallorder();
-      const arr = [];
-      for (let index = 0; index < getAllOrder.result.length; index++) {
-        arr.push({
-          key: getAllOrder.result[index]._id,
-          userName: getAllOrder.result[index].userName,
-          userPhone: getAllOrder.result[index].userPhone,
-          userAddress: getAllOrder.result[index].userAddress,
-          dateCreated: getAllOrder.result[index].dateCreated,
-          totalMoney: getAllOrder.result[index].totalMoney,
-          orderStatus: getAllOrder.result[index].orderStatus,
-          userID: getAllOrder.result[index].userID,
-          description: <OrderDetail data={getAllOrder.result[index]} />,
-        });
-      }
-      setAllOrder(arr);
-      setLoading(false);
+      action("pending");
     } catch (error) {
       console.log(error);
     }
   };
-  const [open, setOpen] = React.useState(false);
+  const menu = (
+    <Menu
+      items={[
+        {
+          label: (
+            <div
+              style={{ display: "flex", alignItems: "center" }}
+              onClick={() => {
+                action("pending");
+              }}
+            >
+              <PendingIcon style={{ fontSize: 20, marginRight: 15 }} />
+              <h6 className="mt-2">Đang chờ xử lý</h6>
+            </div>
+          ),
+        },
+        {
+          type: "divider",
+        },
+        {
+          label: (
+            <div
+              style={{ display: "flex", alignItems: "center" }}
+              onClick={() => {
+                action("shipping");
+              }}
+            >
+              <AirportShuttleIcon style={{ fontSize: 20, marginRight: 15 }} />
+              <h6 className="mt-2">Đang giao</h6>
+            </div>
+          ),
+        },
+        {
+          type: "divider",
+        },
+        {
+          label: (
+            <div
+              style={{ display: "flex", alignItems: "center" }}
+              onClick={() => {
+                action("received");
+              }}
+            >
+              <CallReceivedIcon style={{ fontSize: 20, marginRight: 15 }} />
+              <h6 className="mt-1">Đã nhận</h6>
+            </div>
+          ),
+        },
+        {
+          type: "divider",
+        },
+        {
+          label: (
+            <div
+              style={{ display: "flex", alignItems: "center" }}
+              onClick={() => {
+                action("refund");
+              }}
+            >
+              <CancelIcon style={{ fontSize: 20, marginRight: 15 }} />
+              <h6 className="mt-1">Đã hủy</h6>
+            </div>
+          ),
+        },
+      ]}
+    />
+  );
   return (
     <div
       style={{
@@ -227,6 +312,28 @@ const TabOrder = (props) => {
               alignItems: "center",
             }}
           >
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <Dropdown overlay={menu} placement="bottom" arrow>
+                <Button type="primary" size="large">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-end",
+                      flexDirection: "row",
+                    }}
+                  >
+                    Trạng thái
+                  </div>
+                </Button>
+              </Dropdown>
+            </div>
             <RangePicker
               onChange={handleChangeDebut}
               placeholder={["Từ ngày", "Đến ngày"]}

@@ -1,54 +1,34 @@
 import React, { useEffect, useState } from "react";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { Input, Spin } from "antd";
-import { Table, Space, Button } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import AddCategory from "../Modal/Category/AddCategory";
 import { useSelector } from "react-redux";
-import { Box, Paper } from "@mui/material";
-import orderAPI from "../../../api/orderAPI";
-import productAPI from "../../../api/productAPI";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import DashLeft from "../Modal/Dashboard/DashLeft";
-import DashRight from "../Modal/Dashboard/DashRight";
 import categoryAPI from "../../../api/categoryAPI";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import "chart.js/auto";
+import { Button, DatePicker, Radio, Space } from "antd";
+import orderAPI from "../../../api/orderAPI";
 const TabDashboard = (props) => {
   const [labels, setLabels] = useState([]);
+  const [value, setValue] = useState(1);
   const [data, setData] = useState([]);
   const [back, setBack] = useState([]);
   const loggedInUser = useSelector((state) => state.user.current);
   const [loading, setLoading] = useState(true);
+  const [valueMonth, setValueMonth] = useState(1);
+  const [valueYear, setValueYear] = useState(1);
   useEffect(() => {
     const action = async () => {
       try {
-        const result = await categoryAPI.chartcategory(
-          loggedInUser.accessToken
-        );
+        const result = await orderAPI.getchart();
         const ar1 = [];
         const ar2 = [];
-        const ar3 = [];
         for (let index = 0; index < result.result.length; index++) {
-          let hash = 0;
-          let i;
-          for (i = 0; i < result.result[index].name.length; i += 1) {
-            hash =
-              result.result[index].name.charCodeAt(i) + ((hash << 5) - hash);
-          }
-          let colors = "#";
-          for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            colors += `00${value.toString(16)}`.slice(-2);
-          }
-          ar1.push(result.result[index].name);
-          ar2.push(result.result[index].cost);
-          ar3.push(colors);
+          ar1.push(result.result[index].time);
+          ar2.push(result.result[index].value);
         }
         setLabels(ar1);
         setData(ar2);
-        setBack(ar3);
+
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -56,7 +36,41 @@ const TabDashboard = (props) => {
     };
     action();
   }, []);
+  const onChange = (e) => {
+    setValue(e.target.value);
+  };
 
+  const onChangeMonth = async (date) => {
+    const result = await orderAPI.getchart({
+      month: new Date(date._d).getMonth() + 1,
+      year: new Date(date._d).getFullYear(),
+    });
+    const ar1 = [];
+    const ar2 = [];
+    for (let index = 0; index < result.result.length; index++) {
+      ar1.push(result.result[index].time);
+      ar2.push(result.result[index].value);
+    }
+    setLabels(ar1);
+    setData(ar2);
+
+    setLoading(false);
+  };
+  const onChangeYear = async (date) => {
+    const result = await orderAPI.getchart({
+      year: new Date(date._d).getFullYear(),
+    });
+    const ar1 = [];
+    const ar2 = [];
+    for (let index = 0; index < result.result.length; index++) {
+      ar1.push(result.result[index].time);
+      ar2.push(result.result[index].value);
+    }
+    setLabels(ar1);
+    setData(ar2);
+
+    setLoading(false);
+  };
   return (
     <div
       style={{
@@ -88,7 +102,9 @@ const TabDashboard = (props) => {
               height: "150px",
               alignItems: "center",
             }}
-          ></div>
+          >
+            <h2>Thống kê doanh thu</h2>
+          </div>
           <div
             style={{
               display: "flex",
@@ -98,97 +114,84 @@ const TabDashboard = (props) => {
               marginBottom: "100px",
             }}
           >
-            <div style={{ width: "50%", height: "100%" }}>
-              <DashLeft labels={labels} data={data} back={back} />
-            </div>
-            <div style={{ width: "50%", height: "100%" }}>
-              <DashRight labels={labels} data={data} back={back} />
-            </div>
-          </div>
-          {loading === true ? (
             <div
               style={{
+                width: "50%",
+                height: "100%",
                 display: "flex",
-                flex: 1,
-                height: 200,
-                alignItems: "center",
-                justifyContent: "center",
+                paddingTop: "50px",
+                paddingLeft: "",
               }}
             >
-              <Spin
-                indicator={
-                  <LoadingOutlined
-                    style={{
-                      fontSize: 55,
-                    }}
-                    spin
-                  />
-                }
+              <Radio.Group onChange={onChange} value={value}>
+                <Space direction="vertical">
+                  <div className="mb-5">
+                    <Space size={15}>
+                      <Radio value={2}>Tùy chọn</Radio>
+                      <DatePicker
+                        disabled={value === 1 ? true : false}
+                        onChange={onChangeMonth}
+                        picker="month"
+                        placeholder="Chọn tháng"
+                      />
+                      <DatePicker
+                        disabled={value === 1 ? true : false}
+                        onChange={onChangeYear}
+                        picker="year"
+                        placeholder="Chọn năm"
+                      />
+                    </Space>
+                  </div>
+                  <Radio value={1}>Tháng hiện tại</Radio>
+                </Space>
+              </Radio.Group>
+            </div>
+            <div style={{ width: "50%", height: "100%" }}>
+              <Bar
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: "Doanh thu từng loại sản phẩm",
+                      data: data,
+                      backgroundColor: back,
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                }}
               />
             </div>
-          ) : (
+          </div>
+          <div>
             <div>
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
+              <Line
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: "Doanh thu từng loại sản phẩm",
+                      data: data,
+                      // backgroundColor: back,
+                    },
+                  ],
                 }}
-              >
-                <div style={{ width: "50%" }}>
-                  <h5 style={{ textAlign: "center" }}>
-                    Thống kê doanh thu của từng loại sản phẩm
-                  </h5>
-                  <Doughnut
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: true,
-                    }}
-                    data={{
-                      labels: labels,
-                      datasets: [
-                        {
-                          label: "Doanh thu từng loại sản phẩm",
-                          data: data,
-                          backgroundColor: back,
-                        },
-                      ],
-                    }}
-                  />
-                </div>
-                <div style={{ width: "50%" }}>
-                  <Line
-                    data={{
-                      labels: labels,
-                      datasets: [
-                        {
-                          label: "Doanh thu từng loại sản phẩm",
-                          data: data,
-                          backgroundColor: back,
-                        },
-                      ],
-                    }}
-                  />
-                </div>
-              </div>
-              <div>
-                <Bar
-                  data={{
-                    labels: labels,
-                    datasets: [
-                      {
-                        label: "Doanh thu từng loại sản phẩm",
-                        data: data,
-                        backgroundColor: back,
-                      },
-                    ],
-                  }}
-                />
-              </div>
-              <div className="mb-5"></div>
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                }}
+              />
             </div>
-          )}
+            <div className="mb-5"></div>
+          </div>
         </div>
       </div>
     </div>

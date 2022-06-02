@@ -41,18 +41,7 @@ const OrderDetail = (props) => {
     };
     action();
   }, []);
-  const handleRemoveItem = async (name) => {
-    try {
-      setAllOrderDetail(allOrderDetail.filter((item) => item !== name));
-      await orderAPI.deleteorderdetail(
-        { orderDetailID: name._id },
-        loggedInUser.accessToken
-      );
-      window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const columns = [
     {
       title: "",
@@ -85,26 +74,6 @@ const OrderDetail = (props) => {
       dataIndex: "totalMoney",
       key: "totalMoney",
       render: (text) => <div>₫{text}</div>,
-    },
-    {
-      title: "",
-      key: "action",
-      render: (text, rowKey) =>
-        props.data.orderStatus === "pending" ? (
-          <Popconfirm
-            placement="topRight"
-            title="Bạn có muốn xóa sản phẩm này ra khỏi đơn hàng?"
-            onConfirm={() => handleRemoveItem(rowKey)}
-            okText="Có"
-            cancelText="Không"
-          >
-            <IconButton>
-              <DeleteFilled style={{ fontSize: "25px", color: "#A9A9A9" }} />
-            </IconButton>
-          </Popconfirm>
-        ) : (
-          <div></div>
-        ),
     },
   ];
   return (

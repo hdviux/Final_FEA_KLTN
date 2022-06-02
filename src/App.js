@@ -9,7 +9,6 @@ import "antd/dist/antd.min.css";
 import TabCategory from "./components/Admin/AdminElement/TabCategory";
 import TabDashboard from "./components/Admin/AdminElement/TabDashboard";
 import TabBrand from "./components/Admin/AdminElement/TabBrand";
-import TabContact from "./components/Admin/AdminElement/TabContact";
 import TabUser from "./components/Admin/AdminElement/TabUser";
 import TabProduct from "./components/Admin/AdminElement/TabProduct";
 import TabOrder from "./components/Admin/AdminElement/TabOrder";
@@ -26,9 +25,6 @@ function App() {
       </Route>
       <Route path="/home/brand" exact>
         <TabBrand />
-      </Route>
-      <Route path="/home/contact" exact>
-        <TabContact />
       </Route>
       <Route path="/home/user" exact>
         <TabUser />

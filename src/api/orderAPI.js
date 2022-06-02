@@ -74,6 +74,15 @@ const orderAPI = {
     const url = "/order/getcosteachuser";
     return axiosClient.post(url, { header: { Authorization: accessToken } });
   },
+  getorderbystatus(data) {
+    const url = "/order/getorderbystatus";
+    return axiosClient.post(url, { orderStatus: data.orderStatus });
+  },
+  getchart(data) {
+    console.log(data);
+    const url = "/order/getchart";
+    return axiosClient.post(url, { month: data.month, year: data.year });
+  },
 };
 
 export default orderAPI;

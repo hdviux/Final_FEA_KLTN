@@ -15,8 +15,7 @@ const ItemButton = (props) => {
     try {
       if (props.data.quantity === 0) {
         await categoryAPI.deletecategory(
-          { categoryID: props.data._id },
-          loggedInUser.accessToken
+          { categoryID: props.data._id }
         );
         Swal.fire({
           title: "Xóa thành công!",

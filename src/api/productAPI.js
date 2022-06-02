@@ -31,6 +31,7 @@ const productAPI = {
   },
   addproduct(data, accessToken) {
     const url = "/product/addproduct";
+    console.log(data);
     return axiosClient.post(
       url,
       {
@@ -42,6 +43,7 @@ const productAPI = {
         color: [],
         categoryID: data.categoryID,
         brandID: data.brandID,
+        age: data.age,
       },
       {
         header: { Authorization: accessToken },

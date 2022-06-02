@@ -10,10 +10,7 @@ import Select from "react-select";
 import brandAPI from "../../../../api/brandAPI";
 import TextArea from "antd/lib/input/TextArea";
 import productAPI from "../../../../api/productAPI";
-import {
-  DeleteFilled,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { DeleteFilled, UploadOutlined } from "@ant-design/icons";
 import { storage } from "../../../../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { IconButton } from "@mui/material";
@@ -29,6 +26,9 @@ const AddProduct = (props) => {
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
   const [show, setShow] = useState(false);
+  const [dis, setDis] = useState(false);
+  const [allAge, setAllAge] = useState([]);
+  const [age, setAge] = useState("");
   useEffect(() => {
     const action = async () => {
       try {
@@ -50,14 +50,40 @@ const AddProduct = (props) => {
           });
         }
         setAllCategory(arrCategory);
+        setAllAge([
+          {
+            value: "0-2",
+            label: "0-2",
+          },
+          {
+            value: "3-6",
+            label: "3-6",
+          },
+          {
+            value: "7-12",
+            label: "7-12",
+          },
+        ]);
       } catch (error) {
         console.log(error);
       }
     };
     action();
   }, []);
+  useEffect(() => {
+    if (imageTest.url.length === 3) {
+      setDis(true);
+    }
+    if (imageTest.url.length !== 3) {
+      setDis(false);
+    }
+  }, [imageTest]);
   const changeHandlerCategory = (value) => {
     setCategory(value);
+  };
+
+  const changeHandlerAge = (value) => {
+    setAge(value);
   };
 
   const changeHandlerBrand = (value) => {
@@ -78,23 +104,35 @@ const AddProduct = (props) => {
         price === 0 ||
         quantity === 0 ||
         description === "" ||
-        imageTest.url.length === 0
+        age === "" ||
+        imageTest.url.length !== 3
       ) {
-        Swal.fire({
-          title: "Chưa nhập đầy đủ thông tin!",
-          icon: "warning",
-          showConfirmButton: false,
-          timer: 1000,
-        });
+        if (
+          name !== "" &&
+          category !== "" &&
+          brand !== "" &&
+          price !== 0 &&
+          quantity !== 0 &&
+          age !== "" &&
+          description !== "" &&
+          imageTest.url.length !== 3
+        )
+          Swal.fire({
+            title: "Ảnh sản phẩm phải đủ 3 tấm!",
+            icon: "warning",
+            showConfirmButton: false,
+            timer: 1000,
+          });
       }
       if (
         name !== "" &&
         category !== "" &&
         brand !== "" &&
+        age !== "" &&
         price !== 0 &&
         quantity !== 0 &&
         description !== "" &&
-        imageTest.url.length !== 0
+        imageTest.url.length === 3
       ) {
         const checkName = await productAPI.checkname({ productName: name });
         if (checkName.result === true) {
@@ -116,6 +154,7 @@ const AddProduct = (props) => {
               color: [],
               categoryID: category.value,
               brandID: brand.value,
+              age: age.value,
             },
             loggedInUser.accessToken
           );
@@ -189,6 +228,15 @@ const AddProduct = (props) => {
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </Form.Item>
           <Form.Item>
+            <h5>Độ tuổi:</h5>
+            <Select
+              options={allAge}
+              value={age}
+              onChange={changeHandlerAge}
+              placeholder="Chọn độ tuổi"
+            />
+          </Form.Item>
+          <Form.Item>
             <h5>Loại sản phẩm:</h5>
             <Select
               options={allCategory}
@@ -235,7 +283,11 @@ const AddProduct = (props) => {
           </Form.Item>
           <Form.Item>
             <h5>Ảnh sản phẩm:</h5>
-            <Button icon={<UploadOutlined />} onClick={handleAddImage}>
+            <Button
+              disabled={dis}
+              icon={<UploadOutlined />}
+              onClick={handleAddImage}
+            >
               Upload
             </Button>
             <input

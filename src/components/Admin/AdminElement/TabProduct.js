@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { Input, Spin } from "antd";
+import { Empty, Input, Spin } from "antd";
 import { Table, Space, Button } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import AddProduct from "../Modal/Product/AddProduct";
@@ -10,6 +10,8 @@ import productAPI from "../../../api/productAPI";
 import DetailProduct from "../Modal/Product/DetailProduct";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import "sweetalert2/src/sweetalert2.scss";
+import discountAPI from "../../../api/discountAPI";
+import ButtonDiscount from "../Modal/Discount/ButtonDiscount";
 const TabProduct = (props) => {
   const { Search } = Input;
   const loggedInUser = useSelector((state) => state.user.current);
@@ -127,6 +129,12 @@ const TabProduct = (props) => {
     },
     { title: "Giá tiền", dataIndex: "price", key: "price" },
     { title: "Số lượng tồn", dataIndex: "quantity", key: "quantity" },
+    {
+      title: "Khuyến mã",
+      dataIndex: "discount",
+      key: "discount",
+      render: (text, rowKey) => <ButtonDiscount data={rowKey}/>,
+    },
   ];
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -203,7 +211,15 @@ const TabProduct = (props) => {
             />
           </div>
           {loading === true ? (
-            <div style={{display:"flex",flex:1,height:200,alignItems:"center",justifyContent:"center"}}>
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                height: 200,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Spin
                 indicator={
                   <LoadingOutlined
@@ -217,20 +233,23 @@ const TabProduct = (props) => {
             </div>
           ) : (
             <Table
-            columns={columns}
-            pagination={{ pageSize: 5 }}
-            rowSelection={{
-              ...rowSelection,
-            }}
-            expandable={{
-              expandedRowRender: (record) => (
-                <p style={{ margin: 0 }}>{record.description}</p>
-              ),
-            }}
-            dataSource={allProduct}
-          />
+              columns={columns}
+              pagination={{ pageSize: 5 }}
+              rowSelection={{
+                ...rowSelection,
+              }}
+              expandable={{
+                expandedRowRender: (record) => (
+                  <p style={{ margin: 0 }}>{record.description}</p>
+                ),
+              }}
+              dataSource={allProduct}
+              locale={{
+                emptyText: <Empty description={false} />,
+              }}
+            />
           )}
-          
+
           <AddProduct
             show={showModalAdd}
             datauser={loggedInUser.user}

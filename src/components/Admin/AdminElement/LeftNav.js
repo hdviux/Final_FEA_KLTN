@@ -43,11 +43,6 @@ const LeftNav = (props) => {
       icon: <ShoppingCartIcon fontSize="large" />,
       pathname: "/home/order",
     },
-    {
-      text: "Liên hệ người dùng",
-      icon: <MessageIcon fontSize="large" />,
-      pathname: "/home/contact",
-    },
   ];
 
   return (

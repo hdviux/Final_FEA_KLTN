@@ -231,6 +231,32 @@ const DetailProduct = (props) => {
                 <h6>{props.data.productName}</h6>
               </div>
             </div>
+
+            <div
+              style={{ display: "flex", width: "100%", flexDirection: "row" }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  width: "50%",
+                  flexDirection: "column",
+                  paddingLeft: "8%",
+                }}
+              >
+                <h6>Độ tuổi:</h6>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  width: "50%",
+                  flexDirection: "column",
+                  paddingRight: "30px",
+                }}
+              >
+                <h6>{props.data.age}</h6>
+              </div>
+            </div>
+
             <div
               style={{ display: "flex", width: "100%", flexDirection: "row" }}
             >

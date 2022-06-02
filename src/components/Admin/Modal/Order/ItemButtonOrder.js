@@ -35,20 +35,6 @@ const ItemButtonOrder = (props) => {
       console.log(error);
     }
   };
-  const handleUpdateRefund = async () => {
-    try {
-      await orderAPI.updateorderstatus(
-        {
-          orderID: props.data.key,
-          orderStatus: "refund",
-        },
-        loggedInUser.accessToken
-      );
-      window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleUpdateReceived = async () => {
     try {
       await orderAPI.updateorderstatus(
@@ -115,30 +101,6 @@ const ItemButtonOrder = (props) => {
                         }}
                       />
                       <h6 className="mt-2">Giao đơn hàng</h6>
-                    </div>
-                  ),
-                },
-                {
-                  type: "divider",
-                },
-                {
-                  label: (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginRight: "10px",
-                      }}
-                      onClick={handleUpdateRefund}
-                    >
-                      <CancelIcon
-                        sx={{
-                          fontSize: "20px",
-                          marginRight: "15px",
-                          marginTop: "2px",
-                        }}
-                      />
-                      <h6 className="mt-2">Hủy đơn hàng</h6>
                     </div>
                   ),
                 },

@@ -24,11 +24,16 @@ const UpdateProduct = (props) => {
   const loggedInUser = useSelector((state) => state.user.current);
   const [name, setName] = useState(props.dataProduct.productName);
   const [allBrand, setAllBrand] = useState([]);
+  const [allAge, setAllAge] = useState([]);
   const [image, setImage] = useState(props.dataProduct.image);
   const [allCategory, setAllCategory] = useState([]);
   const [brand, setBrand] = useState({
     value: props.dataBrand._id,
     label: props.dataBrand.brandName,
+  });
+  const [age, setAge] = useState({
+    value: props.dataProduct.age,
+    label: props.dataProduct.age,
   });
   const [category, setCategory] = useState({
     value: props.dataCategory._id,
@@ -61,6 +66,20 @@ const UpdateProduct = (props) => {
           });
         }
         setAllCategory(arrCategory);
+        setAllAge([
+          {
+            value: "0-2",
+            label: "0-2",
+          },
+          {
+            value: "3-6",
+            label: "3-6",
+          },
+          {
+            value: "7-12",
+            label: "7-12",
+          },
+        ]);
       } catch (error) {
         console.log(error);
       }
@@ -74,6 +93,11 @@ const UpdateProduct = (props) => {
   const changeHandlerBrand = (value) => {
     setBrand(value);
   };
+
+  const changeHandlerAge = (value) => {
+    setAge(value);
+  };
+
   const onChangePrice = (value) => {
     setPrice(value);
   };
@@ -92,6 +116,7 @@ const UpdateProduct = (props) => {
         color: [],
         categoryID: category.value,
         brandID: brand.value,
+        age: age.value,
       },
       loggedInUser.accessToken
     );
@@ -195,6 +220,10 @@ const UpdateProduct = (props) => {
       value: props.dataBrand._id,
       label: props.dataBrand.brandName,
     });
+    setAge({
+      value: props.dataProduct.age,
+      label: props.dataProduct.age,
+    });
     setCategory({
       value: props.dataCategory._id,
       label: props.dataCategory.categoryName,
@@ -224,6 +253,15 @@ const UpdateProduct = (props) => {
             <Input
               defaultValue={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <h5>Độ tuổi:</h5>
+            <Select
+              options={allAge}
+              value={age}
+              onChange={changeHandlerAge}
+              placeholder="Chọn độ tuổi"
             />
           </Form.Item>
           <Form.Item>

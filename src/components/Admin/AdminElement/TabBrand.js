@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { Input, Spin } from "antd";
+import { Empty, Input, Spin } from "antd";
 import { Table, Button } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
@@ -192,6 +192,9 @@ const TabBrand = () => {
               pagination={{ pageSize: 5 }}
               columns={columns}
               dataSource={allBrand}
+              locale={{
+                emptyText: <Empty description={false} />,
+              }}
             />
           )}
           <AddBrand

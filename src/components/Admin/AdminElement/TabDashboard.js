@@ -1,41 +1,42 @@
 import React, { useEffect, useState } from "react";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { useSelector } from "react-redux";
-import categoryAPI from "../../../api/categoryAPI";
 import { Bar, Line } from "react-chartjs-2";
 import "chart.js/auto";
-import { Button, DatePicker, Radio, Space } from "antd";
+import { DatePicker, Radio, Space } from "antd";
 import orderAPI from "../../../api/orderAPI";
 const TabDashboard = (props) => {
   const [labels, setLabels] = useState([]);
   const [value, setValue] = useState(1);
   const [data, setData] = useState([]);
   const [back, setBack] = useState([]);
-  const loggedInUser = useSelector((state) => state.user.current);
-  const [loading, setLoading] = useState(true);
-  const [valueMonth, setValueMonth] = useState(1);
-  const [valueYear, setValueYear] = useState(1);
-  useEffect(() => {
-    const action = async () => {
-      try {
-        const result = await orderAPI.getchart();
-        const ar1 = [];
-        const ar2 = [];
-        for (let index = 0; index < result.result.length; index++) {
-          ar1.push(result.result[index].time);
-          ar2.push(result.result[index].value);
-        }
-        setLabels(ar1);
-        setData(ar2);
 
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    action();
-  }, []);
+  useEffect(() => {
+    if (value === 1) {
+      const action = async () => {
+        try {
+          const result = await orderAPI.getchart({
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear(),
+          });
+          const ar1 = [];
+          const ar2 = [];
+          const ar3 = [];
+          for (let index = 0; index < result.result.length; index++) {
+            ar1.push(`Ngày ${result.result[index].time}:`);
+            ar2.push(result.result[index].value);
+            ar3.push(`#${Math.random().toString(16).substr(-6)}`);
+          }
+          setLabels(ar1);
+          setData(ar2);
+          setBack(ar3);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      action();
+    }
+  }, [value]);
   const onChange = (e) => {
     setValue(e.target.value);
   };
@@ -47,14 +48,15 @@ const TabDashboard = (props) => {
     });
     const ar1 = [];
     const ar2 = [];
+    const ar3 = [];
     for (let index = 0; index < result.result.length; index++) {
-      ar1.push(result.result[index].time);
+      ar1.push(`Ngày ${result.result[index].time}`);
       ar2.push(result.result[index].value);
+      ar3.push(`#${Math.random().toString(16).substr(-6)}`);
     }
     setLabels(ar1);
     setData(ar2);
-
-    setLoading(false);
+    setBack(ar3);
   };
   const onChangeYear = async (date) => {
     const result = await orderAPI.getchart({
@@ -62,14 +64,15 @@ const TabDashboard = (props) => {
     });
     const ar1 = [];
     const ar2 = [];
+    const ar3 = [];
     for (let index = 0; index < result.result.length; index++) {
-      ar1.push(result.result[index].time);
+      ar1.push(`Tháng ${result.result[index].time}`);
       ar2.push(result.result[index].value);
+      ar3.push(`#${Math.random().toString(16).substr(-6)}`);
     }
     setLabels(ar1);
     setData(ar2);
-
-    setLoading(false);
+    setBack(ar3);
   };
   return (
     <div
@@ -152,7 +155,7 @@ const TabDashboard = (props) => {
                   labels: labels,
                   datasets: [
                     {
-                      label: "Doanh thu từng loại sản phẩm",
+                      label: "Doanh thu",
                       data: data,
                       backgroundColor: back,
                     },
@@ -175,9 +178,9 @@ const TabDashboard = (props) => {
                   labels: labels,
                   datasets: [
                     {
-                      label: "Doanh thu từng loại sản phẩm",
+                      label: "Doanh thu",
                       data: data,
-                      // backgroundColor: back,
+                      backgroundColor: back,
                     },
                   ],
                 }}

@@ -23,13 +23,13 @@ const ItemButtonOrder = (props) => {
         loggedInUser.accessToken
       );
       setShow(true);
-      await orderAPI.sendemailorder(
-        {
-          orderID: props.data.key,
-          pay: "Thanh toán trực tiếp",
-        },
-        loggedInUser.accessToken
-      );
+      // await orderAPI.sendemailorder(
+      //   {
+      //     orderID: props.data.key,
+      //     pay: "Thanh toán trực tiếp",
+      //   },
+      //   loggedInUser.accessToken
+      // );
       window.location.reload(false);
     } catch (error) {
       console.log(error);
